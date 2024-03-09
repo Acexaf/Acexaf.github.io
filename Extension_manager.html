@@ -1,67 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Extension Manager</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Extension Manager</title>
+<style>
+  /* Simple CSS styles for layout and appearance */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+  }
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  #extensionsList {
+    margin-top: 20px;
+  }
+  .extensionItem {
+    margin-bottom: 10px;
+  }
+</style>
 </head>
 <body>
-    <h1>Extension Manager</h1>
-    <h2>Installed Extensions:</h2>
-    <ul id="extensionList"></ul>
-    <p>Enter the ID of the extension you want to disable:</p>
-    <input type="text" id="extensionId">
-    <button onclick="disableExtension()">Disable Extension</button>
+<h1>Extension Manager</h1>
+<p>Use this tool to manage your extensions:</p>
 
-    <script>
-        // Function to fetch and display a list of installed extensions
-        function displayExtensions() {
-            // Fetch a list of installed extensions
-            chrome.management.getAll(function(extensions) {
-                // Clear the previous list
-                document.getElementById('extensionList').innerHTML = '';
+<div>
+  <label for="sortSelect">Sort by:</label>
+  <select id="sortSelect">
+    <option value="name">Name</option>
+    <option value="enabled">Enabled</option>
+  </select>
+</div>
 
-                // Display each extension in the list
-                extensions.forEach(function(extension) {
-                    var listItem = document.createElement('li');
-                    listItem.textContent = extension.name + ' (ID: ' + extension.id + ')';
-                    document.getElementById('extensionList').appendChild(listItem);
-                });
-            });
-        }
+<div id="extensionsList">
+  <!-- Extension list will be populated dynamically -->
+</div>
 
-        // Function to disable an extension by its ID
-        function disableExtension() {
-            var extensionId = document.getElementById('extensionId').value;
+<script>
+// Function to fetch and display list of installed extensions
+function displayExtensions(sortBy) {
+  chrome.management.getAll(function(extensions) {
+    var extensionsList = document.getElementById("extensionsList");
+    extensionsList.innerHTML = ""; // Clear existing list
+    extensions.sort((a, b) => sortBy === "name" ? a.name.localeCompare(b.name) : a.enabled - b.enabled);
+    extensions.forEach(function(extension) {
+      var div = document.createElement("div");
+      div.classList.add("extensionItem");
+      var checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.id = extension.id;
+      checkbox.checked = extension.enabled;
+      checkbox.addEventListener("change", function() {
+        toggleExtensionStatus(extension.id, this.checked);
+      });
+      var label = document.createElement("label");
+      label.htmlFor = extension.id;
+      label.textContent = extension.name;
+      div.appendChild(checkbox);
+      div.appendChild(label);
+      extensionsList.appendChild(div);
+    });
+  });
+}
 
-            // Disable the extension
-            chrome.management.setEnabled(extensionId, false, function() {
-                console.log('Extension disabled:', extensionId);
-                // Refresh the extension list after disabling
-                displayExtensions();
-            });
-        }
+// Function to toggle extension status
+function toggleExtensionStatus(extensionId, enabled) {
+  chrome.management.setEnabled(extensionId, enabled, function() {
+    var statusMessage = enabled ? "enabled" : "disabled";
+    console.log(`Extension ${extensionId} ${statusMessage}`);
+    alert(`Extension ${extensionId} ${statusMessage}`);
+  });
+}
 
-        // Automatically display the list of extensions when the page loads
-        window.onload = displayExtensions;
-    </script>
+// Event listener for sorting select change
+document.getElementById("sortSelect").addEventListener("change", function() {
+  var sortBy = this.value;
+  displayExtensions(sortBy);
+});
+
+// Display extensions on page load
+displayExtensions("name");
+</script>
 </body>
 </html>
 
-        // Function to disable an extension by its ID
-        function disableExtension() {
-            var extensionId = document.getElementById('extensionId').value;
-
-            // Disable the extension
-            chrome.management.setEnabled(extensionId, false, function() {
-                console.log('Extension disabled:', extensionId);
-                // Refresh the extension list after disabling
-                displayExtensions();
-            });
-        }
-
-        // Automatically display the list of extensions when the page loads
-        window.onload = displayExtensions;
-    </script>
-</body>
-</html>
