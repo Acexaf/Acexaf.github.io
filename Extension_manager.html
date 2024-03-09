@@ -28,63 +28,39 @@
 <h1>Extension Manager</h1>
 <p>Use this tool to manage your extensions:</p>
 
-<div>
-  <label for="sortSelect">Sort by:</label>
-  <select id="sortSelect">
-    <option value="name">Name</option>
-    <option value="enabled">Enabled</option>
-  </select>
-</div>
-
 <div id="extensionsList">
   <!-- Extension list will be populated dynamically -->
+  <div>
+    <input type="checkbox" id="extension1" checked>
+    <label for="extension1">Extension 1</label>
+  </div>
+  <div>
+    <input type="checkbox" id="extension2" checked>
+    <label for="extension2">Extension 2</label>
+  </div>
+  <div>
+    <input type="checkbox" id="extension3" checked>
+    <label for="extension3">Extension 3</label>
+  </div>
 </div>
 
 <script>
-// Function to fetch and display list of installed extensions
-function displayExtensions(sortBy) {
-  chrome.management.getAll(function(extensions) {
-    var extensionsList = document.getElementById("extensionsList");
-    extensionsList.innerHTML = ""; // Clear existing list
-    extensions.sort((a, b) => sortBy === "name" ? a.name.localeCompare(b.name) : a.enabled - b.enabled);
-    extensions.forEach(function(extension) {
-      var div = document.createElement("div");
-      div.classList.add("extensionItem");
-      var checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.id = extension.id;
-      checkbox.checked = extension.enabled;
-      checkbox.addEventListener("change", function() {
-        toggleExtensionStatus(extension.id, this.checked);
-      });
-      var label = document.createElement("label");
-      label.htmlFor = extension.id;
-      label.textContent = extension.name;
-      div.appendChild(checkbox);
-      div.appendChild(label);
-      extensionsList.appendChild(div);
-    });
-  });
-}
-
 // Function to toggle extension status
 function toggleExtensionStatus(extensionId, enabled) {
-  chrome.management.setEnabled(extensionId, enabled, function() {
-    var statusMessage = enabled ? "enabled" : "disabled";
-    console.log(`Extension ${extensionId} ${statusMessage}`);
-    alert(`Extension ${extensionId} ${statusMessage}`);
-  });
+  var checkbox = document.getElementById(extensionId);
+  // Simulate toggling extension status
+  checkbox.checked = enabled;
+  console.log(`Extension ${extensionId} ${enabled ? "enabled" : "disabled"}`);
 }
 
-// Event listener for sorting select change
-document.getElementById("sortSelect").addEventListener("change", function() {
-  var sortBy = this.value;
-  displayExtensions(sortBy);
+// Event listener for checkbox changes
+document.addEventListener("change", function(event) {
+  if (event.target.type === "checkbox") {
+    toggleExtensionStatus(event.target.id, event.target.checked);
+  }
 });
-
-// Display extensions on page load
-displayExtensions("name");
 </script>
 </body>
 </html>
+
 
