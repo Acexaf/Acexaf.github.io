@@ -16,40 +16,30 @@
     <script>
         // Function to fetch and display a list of installed extensions
         function displayExtensions() {
-            // Check if chrome object exists (indicating Chrome browser)
-            if (typeof chrome !== "undefined" && typeof chrome.management !== "undefined") {
-                // Fetch a list of installed extensions
-                chrome.management.getAll(function(extensions) {
-                    // Clear the previous list
-                    document.getElementById('extensionList').innerHTML = '';
+            // Fetch a list of installed extensions
+            chrome.management.getAll(function(extensions) {
+                // Clear the previous list
+                document.getElementById('extensionList').innerHTML = '';
 
-                    // Display each extension in the list
-                    extensions.forEach(function(extension) {
-                        var listItem = document.createElement('li');
-                        listItem.textContent = extension.name + ' (ID: ' + extension.id + ')';
-                        document.getElementById('extensionList').appendChild(listItem);
-                    });
+                // Display each extension in the list
+                extensions.forEach(function(extension) {
+                    var listItem = document.createElement('li');
+                    listItem.textContent = extension.name + ' (ID: ' + extension.id + ')';
+                    document.getElementById('extensionList').appendChild(listItem);
                 });
-            } else {
-                alert('This feature is only supported in the Chrome browser.');
-            }
+            });
         }
 
         // Function to disable an extension by its ID
         function disableExtension() {
             var extensionId = document.getElementById('extensionId').value;
-            
-            // Check if chrome object exists (indicating Chrome browser)
-            if (typeof chrome !== "undefined" && typeof chrome.management !== "undefined") {
-                // Disable the extension
-                chrome.management.setEnabled(extensionId, false, function() {
-                    console.log('Extension disabled:', extensionId);
-                    // Refresh the extension list after disabling
-                    displayExtensions();
-                });
-            } else {
-                alert('This feature is only supported in the Chrome browser.');
-            }
+
+            // Disable the extension
+            chrome.management.setEnabled(extensionId, false, function() {
+                console.log('Extension disabled:', extensionId);
+                // Refresh the extension list after disabling
+                displayExtensions();
+            });
         }
 
         // Automatically display the list of extensions when the page loads
