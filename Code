@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extension Manager</title>
+</head>
+<body>
+    <h1>Extension Manager</h1>
+    <h2>Installed Extensions:</h2>
+    <ul id="extensionList"></ul>
+    <p>Enter the ID of the extension you want to disable:</p>
+    <input type="text" id="extensionId">
+    <button onclick="disableExtension()">Disable Extension</button>
+
+    <script>
+        // Function to fetch and display a list of installed extensions
+        function displayExtensions() {
+            // Check if chrome object exists (indicating Chrome browser)
+            if (typeof chrome !== "undefined" && typeof chrome.management !== "undefined") {
+                // Fetch a list of installed extensions
+                chrome.management.getAll(function(extensions) {
+                    // Clear the previous list
+                    document.getElementById('extensionList').innerHTML = '';
+
+                    // Display each extension in the list
+                    extensions.forEach(function(extension) {
+                        var listItem = document.createElement('li');
+                        listItem.textContent = extension.name + ' (ID: ' + extension.id + ')';
+                        document.getElementById('extensionList').appendChild(listItem);
+                    });
+                });
+            } else {
+                alert('This feature is only supported in the Chrome browser.');
+            }
+        }
+
+        // Function to disable an extension by its ID
+        function disableExtension() {
+            var extensionId = document.getElementById('extensionId').value;
+            
+            // Check if chrome object exists (indicating Chrome browser)
+            if (typeof chrome !== "undefined" && typeof chrome.management !== "undefined") {
+                // Disable the extension
+                chrome.management.setEnabled(extensionId, false, function() {
+                    console.log('Extension disabled:', extensionId);
+                    // Refresh the extension list after disabling
+                    displayExtensions();
+                });
+            } else {
+                alert('This feature is only supported in the Chrome browser.');
+            }
+        }
+
+        // Automatically display the list of extensions when the page loads
+        window.onload = displayExtensions;
+    </script>
+</body>
+</html>
