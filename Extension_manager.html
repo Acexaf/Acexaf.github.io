@@ -47,3 +47,21 @@
     </script>
 </body>
 </html>
+
+        // Function to disable an extension by its ID
+        function disableExtension() {
+            var extensionId = document.getElementById('extensionId').value;
+
+            // Disable the extension
+            chrome.management.setEnabled(extensionId, false, function() {
+                console.log('Extension disabled:', extensionId);
+                // Refresh the extension list after disabling
+                displayExtensions();
+            });
+        }
+
+        // Automatically display the list of extensions when the page loads
+        window.onload = displayExtensions;
+    </script>
+</body>
+</html>
